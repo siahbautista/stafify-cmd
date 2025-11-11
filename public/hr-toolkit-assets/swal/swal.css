@@ -1,0 +1,73 @@
+.swal-popup .input-row, .swal-popup .btns-row {
+    display: flex;
+    margin: 10px 0px;
+    width: 100%;
+}
+
+.swal-popup .input-row {
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.swal-popup .btns-row {
+    justify-content: space-around;
+}
+
+.swal-popup .btns-row button {
+    width: 45%;
+}
+
+.swal-popup .btn {
+    padding: var(--primary-button-padding);
+    border-radius: var(--primary-button-radius);
+    background-color: var(--primary-color);
+    color: white;
+    font-weight: bold;
+    font-size: 12px;
+}
+
+.btn-grn { /* ayaw malagyan ng color */
+    background-color: green;
+}
+
+.swal-popup .hidden {
+    display: none;
+}
+
+.swal-popup .spacer {
+    border-top:  1px solid lightgray;
+    margin-top: 15px;
+    padding-top: 15px;
+}
+
+.swal2-message {
+    margin: 10px;
+    font-size: 14px;
+}
+
+.input-row label {
+    font-size: 14px;
+    text-align: left;
+    width: 30%;
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+.input-row .swal2-input, 
+.input-row .swal2-select {
+    width: 70%;
+    max-width: 250px;
+    height: 35px;
+    font-size: 14px;
+}
+
+.swal-popup .swal2-input-full {
+    width: 100%;
+    padding: 5px;
+    font-size: 14px;    
+    text-align: center;
+    min-height: 35px; /* Minimum height */
+    height: auto;     /* Auto height based on content */
+    resize: none;     /* Disable manual resizing (optional) */
+    overflow-y: hidden; /* Hide scrollbars */
+}
