@@ -11,7 +11,12 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        
+        // admin access level middleware
+        $middleware->alias([
+            'admin.access' => \App\Http\Middleware\CheckAdminAccessLevel::class,
+        ]);
+
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

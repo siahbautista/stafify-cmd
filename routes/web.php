@@ -1,7 +1,13 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+
+// --- Controller Imports ---
+
+// Auth
 use App\Http\Controllers\AuthController;
+
+// HRIS Controllers
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\TimeTrackingController;
 use App\Http\Controllers\ShiftManagementController;
@@ -11,10 +17,18 @@ use App\Http\Controllers\BenefitsAndTaxesController;
 use App\Http\Controllers\PayoutReportsController;
 use App\Http\Controllers\LegalComplianceController;
 use App\Http\Controllers\WorkforceRecordsController;
-
-// --- ADD THESE CONTROLLERS ---
 use App\Http\Controllers\TalentAcquisitionController;
 use App\Http\Controllers\TalentToolkitController;
+
+// UMS Admin Controllers
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\UserController;
+
+// Shared Controllers
+use App\Http\Controllers\ProfileController;
+
+
+// --- Route Definitions ---
 
 // Make login the landing page
 Route::get('/', [AuthController::class, 'showLogin'])->name('home');
@@ -26,19 +40,50 @@ Route::get('/register', [AuthController::class, 'showRegister'])->name('register
 Route::post('/register', [AuthController::class, 'register'])->name('register.post');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-// Protected routes (require authentication)
+// ========================================================
+// UMS Admin Routes (Access Level 1)
+// ========================================================
+Route::middleware(['auth', 'admin.access'])->prefix('admin')->name('admin.')->group(function () {
+    
+    // Admin Dashboard
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+    
+    // Admin Profile (uses shared controller)
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
+
+    // Admin User Management
+    Route::get('/users', [UserController::class, 'index'])->name('users.index');
+    Route::post('/users', [UserController::class, 'store'])->name('users.store');
+    Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
+    Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+    
+    // Admin Pending Users
+    Route::get('/pending-users', [UserController::class, 'pending'])->name('users.pending');
+    Route::post('/users/{user}/approve', [UserController::class, 'approve'])->name('users.approve');
+    Route::post('/users/{user}/reject', [UserController::class, 'reject'])->name('users.reject');
+
+});
+
+// ========================================================
+// Authenticated Routes (All Levels)
+// ========================================================
 Route::middleware('auth')->group(function () {
+    
+    // --- HRIS Dashboard ---
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     
+    // --- Shared Profile Routes ---
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
+    Route::post('/profile/details', [ProfileController::class, 'updateDetails'])->name('profile.updateDetails');
+    Route::post('/profile/picture', [ProfileController::class, 'updatePicture'])->name('profile.updatePicture');
+    Route::post('/profile/picture/delete', [ProfileController::class, 'deletePicture'])->name('profile.deletePicture');
+
+    // --- Pending Account Page ---
     Route::get('/pending', function () {
         return view('pending');
     })->name('pending');
     
-    Route::get('/admin/dashboard', function () {
-        return view('admin.dashboard');
-    })->name('admin.dashboard');
-    
-    // Attendance Routes
+    // --- HRIS Attendance Routes ---
     Route::get('/time-tracking', [TimeTrackingController::class, 'index'])->name('time-tracking');
     Route::post('/time-tracking/clock-in', [TimeTrackingController::class, 'clockIn'])->name('time-tracking.clock-in');
     Route::post('/time-tracking/clock-out', [TimeTrackingController::class, 'clockOut'])->name('time-tracking.clock-out');
@@ -52,23 +97,14 @@ Route::middleware('auth')->group(function () {
     Route::post('/shift-adjustments/request-overtime', [ShiftAdjustmentsController::class, 'requestOvertime'])->name('shift-adjustments.request-overtime');
     Route::post('/shift-adjustments/update-status', [ShiftAdjustmentsController::class, 'updateOvertimeStatus'])->name('shift-adjustments.update-status');
     
-    // HR Management Routes
-    // This is the main page route.
-    Route::get('/talent-acquisition', [App\Http\Controllers\TalentAcquisitionController::class, 'index'])
-         ->name('talent-acquisition.index'); // --- RENAMED BACK ---
+    // --- HRIS HR Management Routes ---
+    Route::get('/talent-acquisition', [TalentAcquisitionController::class, 'index'])->name('talent-acquisition.index');
+    Route::post('/talent-acquisition-toolkit', [TalentAcquisitionController::class, 'store'])->name('talent-acquisition-toolkit.store');
+    Route::put('/talent-acquisition-toolkit/{id}', [TalentAcquisitionController::class, 'update'])->name('talent-acquisition-toolkit.update');
     
-    // --- ADD THESE TWO ROUTES FOR THE MODAL FORM ---
-    Route::post('/talent-acquisition-toolkit', [App\Http\Controllers\TalentAcquisitionController::class, 'store'])
-         ->name('talent-acquisition-toolkit.store');
-    
-    Route::put('/talent-acquisition-toolkit/{id}', [App\Http\Controllers\TalentAcquisitionController::class, 'update'])
-         ->name('talent-acquisition-toolkit.update');
-    // --- END OF ADDITIONS ---
-    
-    // These routes are for the 'talent-management' page
-    Route::get('/talent-management', [App\Http\Controllers\TalentToolkitController::class, 'index'])->name('talent-management');
-    Route::post('/talent-toolkit', [App\Http\Controllers\TalentToolkitController::class, 'store'])->name('talent-toolkit.store');
-    Route::put('/talent-toolkit/{id}', [App\Http\Controllers\TalentToolkitController::class, 'update'])->name('talent-toolkit.update');
+    Route::get('/talent-management', [TalentToolkitController::class, 'index'])->name('talent-management');
+    Route::post('/talent-toolkit', [TalentToolkitController::class, 'store'])->name('talent-toolkit.store');
+    Route::put('/talent-toolkit/{id}', [TalentToolkitController::class, 'update'])->name('talent-toolkit.update');
     
     Route::get('/hr-toolkit', [HrToolkitController::class, 'index'])->name('hr-toolkit');
     Route::post('/hr-toolkit', [HrToolkitController::class, 'store'])->name('hr-toolkit.store');
@@ -83,7 +119,7 @@ Route::middleware('auth')->group(function () {
     
     Route::get('/workforce-records', [WorkforceRecordsController::class, 'index'])->name('workforce-records');
     
-    // Workforce Records API endpoints
+    // --- HRIS API Routes ---
     Route::get('/api/workforce-records/user-rates', [WorkforceRecordsController::class, 'getUserRates'])->name('api.workforce-records.user-rates');
     Route::post('/api/workforce-records/user-rates', [WorkforceRecordsController::class, 'updateUserRates'])->name('api.workforce-records.update-user-rates');
     Route::get('/api/workforce-records/user-settings', [WorkforceRecordsController::class, 'getUserSettings'])->name('api.workforce-records.user-settings');
@@ -98,12 +134,10 @@ Route::middleware('auth')->group(function () {
     Route::post('/api/workforce-records/update-evaluation', [WorkforceRecordsController::class, 'updateEvaluation'])->name('api.workforce-records.update-evaluation');
     Route::post('/api/workforce-records/delete-evaluation', [WorkforceRecordsController::class, 'deleteEvaluation'])->name('api.workforce-records.delete-evaluation');
     
-    // --- TALENT ACQUISITION API ENDPOINTS ---
-    Route::get('/api/talent-acquisition/data', [App\Http\Controllers\TalentAcquisitionController::class, 'getStaffData'])->name('api.talent-acquisition.data');
-    Route::post('/api/talent-acquisition/update-status', [App\Http\Controllers\TalentAcquisitionController::class, 'updateStatus'])->name('api.talent-acquisition.update-status');
-    // --- END OF API ROUTES ---
+    Route::get('/api/talent-acquisition/data', [TalentAcquisitionController::class, 'getStaffData'])->name('api.talent-acquisition.data');
+    Route::post('/api/talent-acquisition/update-status', [TalentAcquisitionController::class, 'updateStatus'])->name('api.talent-acquisition.update-status');
 
-    // Legal & Compliance Routes
+    // --- HRIS Legal & Compliance Routes ---
     Route::resource('legal-documents', LegalComplianceController::class);
     Route::get('/legal-documents/{legalDocument}/download', [LegalComplianceController::class, 'download'])->name('legal-documents.download');
     Route::get('/legal-documents-by-type', [LegalComplianceController::class, 'getByType'])->name('legal-documents.by-type');
@@ -112,7 +146,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/legal-and-compliance', [LegalComplianceController::class, 'index'])->name('legal-and-compliance');
     Route::post('/legal-toolkit', [LegalComplianceController::class, 'store'])->name('legal-toolkit.store');
     
-    // Email Notification Routes
+    // --- HRIS Email Notification Routes ---
     Route::get('/email-notification-time-tracker', function () {
         return view('email-notification-time-tracker');
     })->name('email-notification-time-tracker');

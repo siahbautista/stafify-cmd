@@ -1,106 +1,156 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - Stafify CRM</title>
-    <link rel="stylesheet" href="{{ asset('css/globals.css') }}">
-    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
-</head>
-<body class="bg-gray-100">
-    <div class="min-h-screen">
-        <header class="bg-white shadow-sm border-b">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex justify-between items-center py-4">
-                    <div class="flex items-center">
-                        <img src="{{ asset('assets/images/Stafify-Logo.png') }}" alt="Stafify Logo" class="h-8">
-                        <span class="ml-2 text-xl font-semibold text-gray-800">Admin Dashboard</span>
+@extends('layouts.admin-app')
+
+@section('title', $selectedCompany ? 'Company: ' . e($selectedCompany) : 'Creator Dashboard')
+
+@section('content')
+<main class="flex-1 min-h-screen p-8 !overflow-y-auto">
+    {{-- 
+      Note: The main sidebar toggle button is now in layouts/admin/mobile_menu.blade.php
+      The page heading is now in layouts/admin/header.blade.php
+      This replicates the HRIS layout structure.
+    --}}
+    
+    @if ($selectedCompany)
+        <a href="{{ route('admin.dashboard') }}" class="inline-block mb-4 text-blue-600 hover:underline">
+            &larr; Back to Companies List
+        </a>
+        
+        @if ($companyData)
+        <div class="bg-white shadow-md rounded-lg p-4 md:p-6 mb-6">
+            <div class="flex flex-wrap justify-between">
+                <div class="w-full md:w-1/2 lg:w-1/3 mb-4">
+                    <h3 class="text-lg font-semibold mb-2">Company Details</h3>
+                    <div class="grid grid-cols-1 gap-2">
+                        <div class="flex">
+                            <span class="font-medium w-24">Name:</span>
+                            <span>{{ $companyData->company_name }}</span>
+                        </div>
+                        <div class="flex">
+                            <span class="font-medium w-24">Email:</span>
+                            <span>{{ $companyData->company_email }}</span>
+                        </div>
+                        <div class="flex">
+                            <span class="font-medium w-24">Phone:</span>
+                            <span>{{ $companyData->company_phone }}</span>
+                        </div>
+                        <div class="flex">
+                            <span class="font-medium w-24">Address:</span>
+                            <span>{{ $companyData->company_address }}</span>
+                        </div>
                     </div>
-                    <div class="flex items-center space-x-4">
-                        <span class="text-gray-700">Welcome, {{ Auth::user()->full_name }} (Admin)</span>
-                        <form method="POST" action="{{ route('logout') }}" class="inline">
-                            @csrf
-                            <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors">
-                                Logout
-                            </button>
-                        </form>
+                </div>
+                
+                <div class="w-full md:w-1/3 mb-4">
+                    <h3 class="text-lg font-semibold mb-2">User Statistics</h3>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-blue-50 p-4 rounded">
+                            <p class="text-sm text-blue-700">Total Users</p>
+                            <p class="text-2xl font-bold">{{ $totalCompanyUsers }}</p>
+                        </div>
+                        <div class="bg-green-50 p-4 rounded">
+                            <p class="text-sm text-green-700">Admins</p>
+                            <p class="text-2xl font-bold">{{ $adminCount }}</p>
+                        </div>
                     </div>
                 </div>
             </div>
-        </header>
-
-        <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-            <div class="px-4 py-6 sm:px-0">
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                    <div class="bg-white overflow-hidden shadow rounded-lg">
-                        <div class="p-5">
-                            <div class="flex items-center">
-                                <div class="flex-shrink-0">
-                                    <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
-                                        </svg>
-                                    </div>
-                                </div>
-                                <div class="ml-5 w-0 flex-1">
-                                    <dl>
-                                        <dt class="text-sm font-medium text-gray-500 truncate">Total Users</dt>
-                                        <dd class="text-lg font-medium text-gray-900">{{ \App\Models\User::count() }}</dd>
-                                    </dl>
-                                </div>
-                            </div>
-                        </div>
+        </div>
+        @endif
+        
+        <div class="mt-6 bg-white shadow-md rounded-lg p-4 md:p-6 overflow-x-auto">
+            <h2 class="text-xl font-semibold mb-4">Users in {{ $selectedCompany }}</h2>
+            
+            @if (empty($users) || $users->isEmpty())
+                <p class="text-gray-600">No users found for this company.</p>
+                @if (!$tableExists)
+                    <div class="mt-4 bg-yellow-100 text-yellow-800 p-4 rounded-md">
+                        <p>Company users table hasn't been created yet. The company may not have completed setup.</p>
                     </div>
-
-                    <div class="bg-white overflow-hidden shadow rounded-lg">
-                        <div class="p-5">
-                            <div class="flex items-center">
-                                <div class="flex-shrink-0">
-                                    <div class="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center">
-                                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                        </svg>
-                                    </div>
-                                </div>
-                                <div class="ml-5 w-0 flex-1">
-                                    <dl>
-                                        <dt class="text-sm font-medium text-gray-500 truncate">Pending Users</dt>
-                                        <dd class="text-lg font-medium text-gray-900">{{ \App\Models\User::where('access_level', 0)->count() }}</dd>
-                                    </dl>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="bg-white overflow-hidden shadow rounded-lg">
-                        <div class="p-5">
-                            <div class="flex items-center">
-                                <div class="flex-shrink-0">
-                                    <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                                        </svg>
-                                    </div>
-                                </div>
-                                <div class="ml-5 w-0 flex-1">
-                                    <dl>
-                                        <dt class="text-sm font-medium text-gray-500 truncate">Active Users</dt>
-                                        <dd class="text-lg font-medium text-gray-900">{{ \App\Models\User::where('access_level', '>', 0)->count() }}</dd>
-                                    </dl>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="bg-white shadow rounded-lg">
-                    <div class="px-4 py-5 sm:p-6">
-                        <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Admin Panel</h3>
-                        <p class="text-gray-600">Welcome to the admin dashboard. Here you can manage users, view statistics, and configure system settings.</p>
-                    </div>
-                </div>
-            </div>
-        </main>
-    </div>
-</body>
-</html>
+                @endif
+            @else
+                <table class="w-full min-w-[1200px]">
+                    <thead>
+                        <tr>
+                            <th class="table-head">Username</th>
+                            <th class="table-head">Full Name</th>
+                            <th class="table-head">Email</th>
+                            <th class="table-head">Phone Number</th>
+                            <th class="table-head">Address</th>
+                            <th class="table-head">Country</th>
+                            <th class="table-head">Department</th>
+                            <th class="table-head">Position</th>
+                            <th class="table-head">Admin Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($users as $user)
+                            <tr>
+                                <td class="table-data">{{ $user->user_name }}</td>
+                                <td class="table-data">{{ $user->full_name }}</td>
+                                <td class="table-data">{{ $user->user_email }}</td>
+                                <td class="table-data">{{ $user->phone_number }}</td>
+                                <td class="table-data">{{ $user->address ?? 'N/A' }}</td>
+                                <td class="table-data">{{ $user->country ?? 'N/A' }}</td>
+                                <td class="table-data">{{ $user->user_dept }}</td>
+                                <td class="table-data">{{ $user->user_position }}</td>
+                                <td class="table-data text-center">
+                                    @if ($user->access_level == 1)
+                                        <span class="bg-green-100 text-green-800 px-2 py-1 rounded">Admin</span>
+                                    @elseif ($user->access_level == 2)
+                                        @if ($user->is_admin == 1)
+                                            <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded">Super Admin</span>
+                                        @else
+                                            <span class="bg-green-100 text-green-800 px-2 py-1 rounded">Admin</span>
+                                        @endif
+                                    @elseif ($user->access_level == 3)
+                                        <span class="bg-gray-100 text-gray-800 px-2 py-1 rounded">User</span>
+                                    @else
+                                        <span class="bg-gray-100 text-gray-800 px-2 py-1 rounded">Unknown</span>
+                                    @endif
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            @endif
+        </div>
+        
+    @else
+        <div class="mt-6 bg-white shadow-md rounded-lg p-4 md:p-6 overflow-x-auto">
+            @if (empty($companies) || $companies->isEmpty())
+                <p class="text-gray-600">No companies registered yet.</p>
+            @else
+                <table class="w-full">
+                    <thead>
+                        <tr>
+                            <th class="table-head">Company Name</th>
+                            <th class="table-head">Email</th>
+                            <th class="table-head">Phone</th>
+                            <th class="table-head">Address</th>
+                            <th class="table-head">User Count</th>
+                            <th class="table-head">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($companies as $company)
+                            <tr>
+                                <td class="table-data font-medium">{{ $company->company_name }}</td>
+                                <td class="table-data">{{ $company->company_email }}</td>
+                                <td class="table-data">{{ $company->company_phone }}</td>
+                                <td class="table-data">{{ $company->company_address }}</td>
+                                <td class="table-data text-center">{{ $company->user_count ?? 0 }}</td>
+                                <td class="table-data">
+                                    <a href="{{ route('admin.dashboard', ['company' => $company->company_name]) }}" 
+                                       class="bg-blue-500 text-white px-3 py-1 rounded text-sm inline-block">
+                                        View Users
+                                    </a>
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            @endif
+        </div>
+    @endif
+</main>
+@endsection

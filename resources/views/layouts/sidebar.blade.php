@@ -15,7 +15,7 @@
 
 <!-- Desktop Sidebar -->
 <div class="sidebar-container">
-    <div class="sidebar">
+    <div class="sidebar">   
         <nav id="sidebarMenu">
             <div class="sidebarLogo">
                 <img src="https://www.stafify.com/cdn/shop/files/e50lj9u5c9xat9j7z3ne_752x.png?v=1613708232" class="menu-text site-logo" alt="Stafify Logo">
