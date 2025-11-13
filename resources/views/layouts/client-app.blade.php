@@ -52,6 +52,34 @@
             color: #575757;
             margin-top: 2px;
         }
+
+/* Override all Tailwind blue background classes globally */
+    /* [class*="bg-blue-"] {
+        background-color: #3B82F6 !important;
+    } */
+
+    /* Optional: override hover blues */
+    [class*="hover\\:bg-blue-"]:hover {
+        background-color: #2563EB !important;
+    }
+
+  /* Optional: override text blues too */
+    [class*="text-blue-"] {
+        color: #3B82F6 !important;
+    }
+
+    [class*="hover\\:text-blue-"]:hover {
+        color: #2563EB !important;
+    }
+
+    /* Optional: override border blues */
+    [class*="border-blue-"] {
+        border-color: #3B82F6 !important;
+    }
+
+    [class*="hover\\:border-blue-"]:hover {
+        border-color: #2563EB !important;
+    }
     </style>
     
 </head>

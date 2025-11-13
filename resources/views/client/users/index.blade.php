@@ -27,88 +27,119 @@
             </div>        
         </div>
         
-        <div class="flex justify-between items-center">
-            <div class="page-heading">
-            </div>
-            
-            <div class="flex gap-4 items-center">
+        <!-- Updated Table Section -->
+        <div class="bg-white p-3 sm:p-4 rounded-lg shadow-md mb-4 sm:mb-6">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                 @if ($isAdmin >= 1)
-                    <button onclick="openAddUserModal()" class="hover:bg-[#1f5496] text-[#1f5496] hover:text-white bg-[#DDE5EF] p-2 rounded">
-                       <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="1"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-user-plus"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" /><path d="M16 19h6" /><path d="M19 16v6" /><path d="M6 21v-2a4 4 0 0 1 4 -4h4" /></svg>
+                    <button onclick="openAddUserModal()" class="w-full sm:w-auto bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2">
+                        <i class="fas fa-plus"></i>
+                        Add New User
                     </button>
                 @endif
+                
+                <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                    <input type="text" id="searchInput" placeholder="Search by name" 
+                           class="w-full sm:w-auto border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    
+                    <select id="statusFilter"
+                            class="w-full sm:w-auto border border-gray-300 rounded-lg px-6 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="all">All Status</option>
+                        <option value="1">Super Admin</option>
+                        <option value="2">Admin</option>
+                        <option value="0">Basic User</option>
+                    </select>
+
+                    <select id="departmentFilter"
+                            class="w-full sm:w-auto border border-gray-300 rounded-lg px-6 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="all">All Departments</option>
+                        @php
+                            $uniqueDepts = $users->pluck('user_dept')->unique()->filter()->sort();
+                        @endphp
+                        @foreach($uniqueDepts as $dept)
+                            <option value="{{ $dept }}">{{ $dept }}</option>
+                        @endforeach
+                    </select>
+                </div>
             </div>
-        </div>
-        
-         <div class="mt-6 bg-white shadow-md rounded-lg p-4 md:p-6 overflow-x-auto">
-            <table class="w-full min-w-[1200px]" id="users-table">
-                <thead>
-                    <tr>
-                        <th class="table-head">Full Name</th>
-                        <th class="table-head">Email</th>
-                        <th class="table-head">Phone Number</th>
-                        <th class="table-head">Company</th>
-                        <th class="table-head">Branch Location</th>
-                        <th class="table-head">Department</th>
-                        <th class="table-head">Position</th>
-                        <th class="table-head">Starting Date</th>
-                        <th class="table-head">Admin Status</th>
-                        <th class="table-head">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($users as $user)
-                        <tr id="user-row-{{ $user->user_id }}" class="{{ $user->is_admin == 1 ? 'bg-yellow-50 font-semibold' : '' }}">
-                            <td class="table-data">{{ $user->full_name }}</td>
-                            <td class="table-data">{{ $user->user_email }}</td>
-                            <td class="table-data">{{ $user->phone_number }}</td>
-                            <td class="table-data">{{ $user->company }}</td>
-                            <td class="table-data">{{ $user->branch_location }}</td>
-                            <td class="table-data">{{ $user->user_dept }}</td>
-                            <td class="table-data">{{ $user->user_position }}</td>
-                            <td class="table-data">{{ $user->employment_date }}</td>
-                            <td class="table-data text-center">
-                                @if ($user->is_admin == 1)
-                                    <span class="bg-yellow-200 text-yellow-800 px-2 py-1 rounded-full text-xs">Super Admin</span>
-                                @elseif ($user->is_admin == 2)
-                                    <span class="bg-blue-200 text-blue-800 px-2 py-1 rounded-full text-xs">Admin</span>
-                                @else
-                                    <span class="bg-green-200 text-green-800 px-2 py-1 text-xs">Basic User</span>
-                                @endif
-                            </td>
-                            <td class="table-data text-center">
-                                <div class="flex gap-3 items-center justify-center">
-                                    @if ( $isAdmin == 1 || ($isAdmin == 2 && ($user->is_admin == 0 || $user->user_id == Auth::id())) )
-                                        <button onclick='openEditModal(@json($user))' class="block w-[40px] text-left p-2 text-sm text-white bg-[#1f5496] rounded-[5px]" title="Edit User">
-                                            <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="1"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-edit"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" /><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" /><path d="M16 5l3 3" /></svg>
-                                        </button>
-                                    @endif
 
-                                    @if ($user->user_id != Auth::id() && $user->is_admin != 1)
-                                        @if ( $isAdmin == 1 || ($isAdmin == 2 && $user->is_admin == 0) )
-                                            <button onclick="deleteUser({{ $user->user_id }}, '{{ $user->full_name }}')" class="block w-[40px] text-left p-2 text-white text-sm bg-red-700 rounded-[5px]" title="Delete User">
-                                                <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="1"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-trash"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
-                                            </button>
-                                        @endif
-                                    @endif
-
-                                    @if ($isAdmin == 1)
-                                        @if ($user->is_admin == 0)
-                                            <button onclick="promoteUser({{ $user->user_id }}, '{{ $user->full_name }}')" class="block w-[40px] text-left p-2 text-green-900 text-sm bg-green-500 rounded-[5px]" title="Promote to Admin">
-                                                <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="1"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-user-up"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" /><path d="M6 21v-2a4 4 0 0 1 4 -4h4" /><path d="M19 22v-6" /><path d="M22 19l-3 -3l-3 3" /></svg>
-                                            </button>
+            <!-- Users Table -->
+            <div class="overflow-x-auto">
+                <div class="min-w-full inline-block align-middle">
+                    <table class="min-w-full divide-y divide-gray-200" id="users-table">
+                        <thead>
+                            <tr class="bg-gray-50">
+                                <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Full Name</th>
+                                <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+                                <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Phone Number</th>
+                                <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Company</th>
+                                <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Branch Location</th>
+                                <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Department</th>
+                                <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Position</th>
+                                <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Starting Date</th>
+                                <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Admin Status</th>
+                                <th class="px-4 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="users-table-body" class="divide-y divide-gray-200">
+                            @foreach ($users as $user)
+                                <tr id="user-row-{{ $user->user_id }}" class="align-middle hover:bg-gray-50 {{ $user->is_admin == 1 ? 'bg-yellow-50 font-semibold' : '' }}">
+                                    <td class="px-4 sm:px-6 py-4 text-sm">{{ $user->full_name }}</td>
+                                    <td class="px-4 sm:px-6 py-4 text-sm">{{ $user->user_email }}</td>
+                                    <td class="px-4 sm:px-6 py-4 text-sm">{{ $user->phone_number }}</td>
+                                    <td class="px-4 sm:px-6 py-4 text-sm">{{ $user->company }}</td>
+                                    <td class="px-4 sm:px-6 py-4 text-sm">{{ $user->branch_location }}</td>
+                                    <td class="px-4 sm:px-6 py-4 text-sm">{{ $user->user_dept }}</td>
+                                    <td class="px-4 sm:px-6 py-4 text-sm">{{ $user->user_position }}</td>
+                                    <td class="px-4 sm:px-6 py-4 text-sm">{{ $user->employment_date }}</td>
+                                    <td class="px-4 sm:px-6 py-4 text-sm text-left">
+                                        @if ($user->is_admin == 1)
+                                            <span style="white-space: nowrap;" class="px-2 py-1 inline-flex text-xs sm:text-sm font-semibold rounded-full bg-yellow-200 text-yellow-800">Super Admin</span>
                                         @elseif ($user->is_admin == 2)
-                                            <button onclick="demoteUser({{ $user->user_id }}, '{{ $user->full_name }}')" class="block w-[40px] text-left p-2 text-yellow-900 text-sm bg-yellow-500 rounded-[5px]" title="Demote to Basic User">
-                                                <svg  xmlns="http://www.w3.org/2000/svg"  width="24"  height="24"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="1"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-user-down"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" /><path d="M6 21v-2a4 4 0 0 1 4 -4h4" /><path d="M19 16v6" /><path d="M22 19l-3 3l-3 -3" /></svg>
-                                            </button>
+                                            <span style="white-space: nowrap;"class="px-2 py-1 inline-flex text-xs sm:text-sm font-semibold rounded-full bg-blue-200 text-blue-800">Admin</span>
+                                        @else
+                                            <span style="white-space: nowrap;"class="px-2 py-1 inline-flex text-xs sm:text-sm font-semibold rounded-full bg-green-200 text-green-800">Basic User</span>
                                         @endif
-                                    @endif
-                                </div>
-                            </td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
+                                    </td>
+                                    <td class="px-4 sm:px-6 py-4 text-sm text-center">
+                                        <div class="flex justify-center items-center space-x-2">
+                                            @if ( $isAdmin == 1 || ($isAdmin == 2 && ($user->is_admin == 0 || $user->user_id == Auth::id())) )
+                                                <button onclick='openEditModal(@json($user))' class="text-blue-500 hover:text-blue-700" title="Edit User">
+                                                    <svg  xmlns="http://www.w3.org/2000/svg"  width="20"  height="20"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-edit"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" /><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" /><path d="M16 5l3 3" /></svg>
+                                                </button>
+                                            @endif
+
+                                            @if ($user->user_id != Auth::id() && $user->is_admin != 1)
+                                                @if ( $isAdmin == 1 || ($isAdmin == 2 && $user->is_admin == 0) )
+                                                    <button onclick="deleteUser({{ $user->user_id }}, '{{ $user->full_name }}')" class="text-red-500 hover:text-red-700" title="Delete User">
+                                                        <svg  xmlns="http://www.w3.org/2000/svg"  width="20"  height="20"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-trash"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
+                                                    </button>
+                                                @endif
+                                            @endif
+
+                                            @if ($isAdmin == 1)
+                                                @if ($user->is_admin == 0)
+                                                    <button onclick="promoteUser({{ $user->user_id }}, '{{ $user->full_name }}')" class="text-green-500 hover:text-green-700" title="Promote to Admin">
+                                                        <svg  xmlns="http://www.w3.org/2000/svg"  width="20"  height="20"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-user-up"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" /><path d="M6 21v-2a4 4 0 0 1 4 -4h4" /><path d="M19 22v-6" /><path d="M22 19l-3 -3l-3 3" /></svg>
+                                                    </button>
+                                                @elseif ($user->is_admin == 2)
+                                                    <button onclick="demoteUser({{ $user->user_id }}, '{{ $user->full_name }}')" class="text-yellow-500 hover:text-yellow-700" title="Demote to Basic User">
+                                                        <svg  xmlns="http://www.w3.org/2000/svg"  width="20"  height="20"  viewBox="0 0 24 24"  fill="none"  stroke="currentColor"  stroke-width="2"  stroke-linecap="round"  stroke-linejoin="round"  class="icon icon-tabler icons-tabler-outline icon-tabler-user-down"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" /><path d="M6 21v-2a4 4 0 0 1 4 -4h4" /><path d="M19 16v6" /><path d="M22 19l-3 3l-3 -3" /></svg>
+                                                    </button>
+                                                @endif
+                                            @endif
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                            @if($users->count() == 0)
+                                <tr>
+                                    <td colspan="10" class="px-4 sm:px-6 py-4 text-center text-gray-500">No users found</td>
+                                </tr>
+                            @endif
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </main> 
 </section>
@@ -144,6 +175,68 @@ function showToast(message, type = 'success') {
         title: message
     });
 }
+
+// --- Filter Users Function ---
+function filterUsers() {
+    const input = document.getElementById('searchInput');
+    const filter = input.value.toLowerCase().trim();
+    const statusFilter = document.getElementById('statusFilter').value;
+    const deptFilter = document.getElementById('departmentFilter').value;
+    const rows = document.getElementById('users-table-body').getElementsByTagName('tr');
+    let hasVisibleRows = false;
+
+    // Loop through all rows and hide/show based on filters
+    Array.from(rows).forEach(row => {
+        // Ensure it's not the "no results" row
+        if (row.classList.contains('no-results-row')) {
+            row.style.display = 'none'; // Hide "no results" row during filtering
+            return;
+        }
+
+        const nameCell = row.querySelector('td:nth-child(1)');
+        const deptCell = row.querySelector('td:nth-child(6)');
+        const statusCell = row.querySelector('td:nth-child(9) span'); // Get the span inside
+
+        if (nameCell && deptCell && statusCell) {
+            const name = (nameCell.textContent || nameCell.innerText).toLowerCase();
+            const department = (deptCell.textContent || deptCell.innerText).trim();
+            
+            // Get status from the span's text content
+            let status = (statusCell.textContent || statusCell.innerText).trim();
+            let statusValue = '0'; // Basic User
+            if (status === 'Super Admin') {
+                statusValue = '1';
+            } else if (status === 'Admin') {
+                statusValue = '2';
+            }
+
+            const matchesName = name.includes(filter);
+            const matchesStatus = statusFilter === 'all' || statusValue === statusFilter;
+            const matchesDept = deptFilter === 'all' || department === deptFilter;
+            
+            const matches = matchesName && matchesStatus && matchesDept;
+            row.style.display = matches ? '' : 'none';
+            if (matches) hasVisibleRows = true;
+        }
+    });
+
+    // Show/hide "No results" message
+    let noResultsRow = document.querySelector('.no-results-row');
+    if (!hasVisibleRows) {
+        if (!noResultsRow) {
+            noResultsRow = document.createElement('tr');
+            noResultsRow.className = 'no-results-row';
+            noResultsRow.innerHTML = `
+                <td colspan="10" class="px-6 py-4 text-center text-gray-500">No results found</td>
+            `;
+            document.getElementById('users-table-body').appendChild(noResultsRow);
+        }
+        noResultsRow.style.display = '';
+    } else if (noResultsRow) {
+        noResultsRow.style.display = 'none';
+    }
+}
+
 
 // --- Add/Edit User Modals ---
 function openAddUserModal() {
@@ -205,9 +298,15 @@ function closeAddPositionModal() {
 
 // --- Dynamic Table Row Functions ---
 function getUserAccessBadge(user) {
+    let badge = '';
     if (user.is_admin == 1) {
-// ... existing code ... -->
+        badge = '<span class="px-2 py-1 inline-flex text-xs sm:text-sm font-semibold rounded-full bg-yellow-200 text-yellow-800 whitespace-nowrap">Super Admin</span>';
+    } else if (user.is_admin == 2) {
+        badge = `<span class="px-2 py-1 inline-flex text-xs sm:text-sm font-semibold rounded-full bg-blue-200 text-blue-800">Admin</span>`;
+    } else {
+        badge = `<span class="px-2 py-1 inline-flex text-xs sm:text-sm font-semibold rounded-full bg-green-200 text-green-800">Basic User</span>`;
     }
+    return badge;
 }
 
 const loggedInUser = {
@@ -217,13 +316,13 @@ const loggedInUser = {
 
 function getActionButtons(user) {
     let buttons = '';
+    const userJson = JSON.stringify(user).replace(/"/g, '&quot;');
 
     // Edit Button
     if (loggedInUser.isAdmin == 1 || (loggedInUser.isAdmin == 2 && (user.is_admin == 0 || user.user_id == loggedInUser.id))) {
-        const userJson = JSON.stringify(user).replace(/"/g, '&quot;');
         buttons += `
-            <button onclick='openEditModal(${JSON.stringify(user)})' class="block w-[40px] text-left p-2 text-sm text-white bg-[#1f5496] rounded-[5px]" title="Edit User">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-edit"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" /><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" /><path d="M16 5l3 3" /></svg>
+            <button onclick='openEditModal(${userJson})' class="text-blue-500 hover:text-blue-700" title="Edit User">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-edit"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" /><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" /><path d="M16 5l3 3" /></svg>
             </button>`;
     }
 
@@ -231,8 +330,8 @@ function getActionButtons(user) {
     if (user.user_id != loggedInUser.id && user.is_admin != 1) {
         if (loggedInUser.isAdmin == 1 || (loggedInUser.isAdmin == 2 && user.is_admin == 0)) {
             buttons += `
-                <button onclick="deleteUser(${user.user_id}, '${user.full_name}')" class="block w-[40px] text-left p-2 text-white text-sm bg-red-700 rounded-[5px]" title="Delete User">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-trash"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
+                <button onclick="deleteUser(${user.user_id}, '${user.full_name}')" class="text-red-500 hover:text-red-700" title="Delete User">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-trash"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
                 </button>`;
         }
     }
@@ -241,54 +340,61 @@ function getActionButtons(user) {
     if (loggedInUser.isAdmin == 1) {
         if (user.is_admin == 0) {
             buttons += `
-                <button onclick="promoteUser(${user.user_id}, '${user.full_name}')" class="block w-[40px] text-left p-2 text-green-900 text-sm bg-green-500 rounded-[5px]" title="Promote to Admin">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-user-up"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" /><path d="M6 21v-2a4 4 0 0 1 4 -4h4" /><path d="M19 22v-6" /><path d="M22 19l-3 -3l-3 3" /></svg>
+                <button onclick="promoteUser(${user.user_id}, '${user.full_name}')" class="text-green-500 hover:text-green-700" title="Promote to Admin">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-user-up"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" /><path d="M6 21v-2a4 4 0 0 1 4 -4h4" /><path d="M19 22v-6" /><path d="M22 19l-3 -3l-3 3" /></svg>
                 </button>`;
         } else if (user.is_admin == 2) {
             buttons += `
-                <button onclick="demoteUser(${user.user_id}, '${user.full_name}')" class="block w-[40px] text-left p-2 text-yellow-900 text-sm bg-yellow-500 rounded-[5px]" title="Demote to Basic User">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-user-down"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" /><path d="M6 21v-2a4 4 0 0 1 4 -4h4" /><path d="M19 16v6" /><path d="M22 19l-3 3l-3 -3" /></svg>
+                <button onclick="demoteUser(${user.user_id}, '${user.full_name}')" class="text-yellow-500 hover:text-yellow-700" title="Demote to Basic User">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-user-down"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" /><path d="M6 21v-2a4 4 0 0 1 4 -4h4" /><path d="M19 16v6" /><path d="M22 19l-3 3l-3 -3" /></svg>
                 </button>`;
         }
     }
 
-    return `<div class="flex gap-3 items-center justify-center">${buttons}</div>`;
+    return `<div class="flex justify-center items-center space-x-2">${buttons}</div>`;
 }
 
 function createRowHtml(user) {
     return `
-        <td class="table-data">${user.full_name || ''}</td>
-        <td class="table-data">${user.user_email || ''}</td>
-        <td class="table-data">${user.phone_number || ''}</td>
-        <td class="table-data">${user.company || ''}</td>
-        <td class="table-data">${user.branch_location || ''}</td>
-        <td class="table-data">${user.user_dept || ''}</td>
-        <td class="table-data">${user.user_position || ''}</td>
-        <td class="table-data">${user.employment_date || ''}</td>
-        <td class="table-data text-center">${getUserAccessBadge(user)}</td>
-        <td class="table-data text-center">${getActionButtons(user)}</td>
+        <td class="px-4 sm:px-6 py-4 text-sm">${user.full_name || ''}</td>
+        <td class="px-4 sm:px-6 py-4 text-sm">${user.user_email || ''}</td>
+        <td class="px-4 sm:px-6 py-4 text-sm">${user.phone_number || ''}</td>
+        <td class="px-4 sm:px-6 py-4 text-sm">${user.company || ''}</td>
+        <td class="px-4 sm:px-6 py-4 text-sm">${user.branch_location || ''}</td>
+        <td class="px-4 sm:px-6 py-4 text-sm">${user.user_dept || ''}</td>
+        <td class="px-4 sm:px-6 py-4 text-sm">${user.user_position || ''}</td>
+        <td class="px-4 sm:px-6 py-4 text-sm">${user.employment_date || ''}</td>
+        <td class="px-4 sm:px-6 py-4 text-sm text-left">${getUserAccessBadge(user)}</td>
+        <td class="px-4 sm:px-6 py-4 text-sm text-center">${getActionButtons(user)}</td>
     `;
 }
 
 function appendNewUserToTable(user) {
-    const tableBody = document.querySelector('#users-table tbody');
+    const tableBody = document.querySelector('#users-table-body');
     const newRow = document.createElement('tr');
     newRow.id = `user-row-${user.user_id}`;
-    newRow.className = user.is_admin == 1 ? 'bg-yellow-50 font-semibold' : '';
+    newRow.className = `align-middle hover:bg-gray-50 ${user.is_admin == 1 ? 'bg-yellow-50 font-semibold' : ''}`;
     newRow.innerHTML = createRowHtml(user);
+    
+    // Remove "no results" row if it exists
+    const noResultsRow = tableBody.querySelector('.no-results-row');
+    if (noResultsRow) {
+        noResultsRow.remove();
+    }
+
     tableBody.appendChild(newRow);
 }
 
 function updateUserRow(user) {
     const row = document.getElementById(`user-row-${user.user_id}`);
     if (row) {
-        row.className = user.is_admin == 1 ? 'bg-yellow-50 font-semibold' : '';
+        row.className = `align-middle hover:bg-gray-50 ${user.is_admin == 1 ? 'bg-yellow-50 font-semibold' : ''}`;
         row.innerHTML = createRowHtml(user);
     }
 }
 
 function updateTotalUsersCount() {
-    const rows = document.querySelectorAll('#users-table tbody tr');
+    const rows = document.querySelectorAll('#users-table-body tr:not(.no-results-row)');
     const totalUserElements = document.querySelectorAll('.total_users span');
     const userCount = rows.length;
     
@@ -302,6 +408,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Initialize country dropdowns
     initCountryDropdowns();
+
+    // Add event listeners for filters
+    document.getElementById('searchInput').addEventListener('keyup', filterUsers);
+    document.getElementById('statusFilter').addEventListener('change', filterUsers);
+    document.getElementById('departmentFilter').addEventListener('change', filterUsers);
+
 
     // --- Add/Edit User Form Handler ---
     document.getElementById('addUserForm').addEventListener('submit', handleUserFormSubmit);
@@ -351,6 +463,8 @@ document.addEventListener('DOMContentLoaded', function() {
                     appendNewUserToTable(data.user);
                     updateTotalUsersCount();
                 }
+                // Re-run filter in case the added/edited user matches current filters
+                filterUsers();
                 showToast(data.message, 'success');
             } else {
                 let errorMessage = data.message;
@@ -393,7 +507,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 const newOption = new Option(data.department.department_name, data.department.department_name);
                 
                 document.querySelector('select[name="user_dept"]').appendChild(newOption.cloneNode(true));
-                document.getElementById('editDept').appendChild(newOption);
+                document.getElementById('editDept').appendChild(newOption.cloneNode(true));
+                
+                // Add to department filter dropdown
+                document.getElementById('departmentFilter').appendChild(newOption.cloneNode(true));
                 
                 showToast(data.message, 'success');
                 closeAddDepartmentModal();
@@ -477,6 +594,7 @@ async function deleteUser(userId, userName) {
         if (data.success) {
             document.getElementById(`user-row-${userId}`).remove();
             updateTotalUsersCount();
+            filterUsers(); // Re-check if "no results" row is needed
             showToast(data.message, 'success');
         } else {
             showToast(data.message, 'error');
@@ -515,6 +633,7 @@ async function promoteUser(userId, userName) {
 
         if (data.success) {
             updateUserRow(data.user);
+            filterUsers(); // Re-apply filters
             showToast(data.message, 'success');
         } else {
             showToast(data.message, 'error');
@@ -536,7 +655,6 @@ async function demoteUser(userId, userName) {
         confirmButtonText: 'Yes, demote!'
     });
 
-TEST-CASES
     if (!result.isConfirmed) return;
 
     try {
@@ -554,6 +672,7 @@ TEST-CASES
 
         if (data.success) {
             updateUserRow(data.user);
+            filterUsers(); // Re-apply filters
             showToast(data.message, 'success');
         } else {
             showToast(data.message, 'error');
@@ -604,7 +723,9 @@ function setupCountrySearch(searchInputId, countryInputId, countryCodeInputId, d
     });
 
     searchInput.addEventListener('focus', function() {
-        updateCountryDropdown(countries, dropdown, countryInput, countryCodeInput, searchInput);
+        if(countries.length > 0) {
+            updateCountryDropdown(countries, dropdown, countryInput, countryCodeInput, searchInput);
+        }
     });
 
     document.addEventListener('click', function(event) {

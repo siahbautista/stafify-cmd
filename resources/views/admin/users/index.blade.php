@@ -2,125 +2,135 @@
 
 @section('title', 'All Users')
 
-@section('content')
+@push('styles')
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+@endpush
 
-{{-- THIS LINE IS MODIFIED --}}
-<main class="flex-1 min-h-screen p-8 !overflow-y-auto lg:ml-[250px]">
-    <div class="flex justify-between items-center">
-        <div class="page-heading">
-            {{-- This heading is now in the layout header --}}
-        </div>
-        <div class="flex gap-4 items-center">
-            <button onclick="openAddUserModal()" class="hover:bg-[#1f5496] text-[#1f5496] hover:text-white bg-[#DDE5EF] p-2 rounded">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-user-plus"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" /><path d="M16 19h6" /><path d="M19 16v6" /><path d="M6 21v-2a4 4 0 0 1 4 -4h4" /></svg>
+@section('content')
+<main>
+    <!-- User Table -->
+    <div class="bg-white p-3 sm:p-4 rounded-lg shadow-md mb-4 sm:mb-6 mt-6">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+            <button onclick="openAddUserModal()" class="w-full sm:w-auto bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-user-plus"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" /><path d="M16 19h6" /><path d="M19 16v6" /><path d="M6 21v-2a4 4 0 0 1 4 -4h4" /></svg>
+                Add New User
             </button>
-            {{-- Sync button removed as requested --}}
-        </div>
-    </div>
-    
-    <div class="flex flex-col gap-2 mt-6 bg-white shadow-md rounded-lg p-4 md:p-6">
-        <div class="flex justify-between gap-5">
-            <h2 class="text-lg font-semibold mb-4">Filter Active Users</h2>
-            <button id="resetFilters" class="bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded">
-                Reset Filters
-            </button>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div>
-                <label class="block mb-2 text-sm font-medium">Search by Name</label>
-                <input type="text" id="nameFilter" placeholder="Enter name" class="w-full border p-2 rounded">
-            </div>
-            <div>
-                <label class="block mb-2 text-sm font-medium">Company</label>
-                <select id="companyFilter" class="w-full border p-[0.58rem] rounded">
+
+            <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                
+                <div class="relative w-full sm:w-auto">
+
+                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+
+                    <input type="text" id="nameFilter" placeholder="Search by name" 
+                        class="w-full sm:w-auto border border-gray-300 rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                
+                <select id="companyFilter" class="w-full sm:w-auto border border-gray-300 rounded-lg px-6 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <option value="">All Companies</option>
                     @foreach ($companies->whereNotNull() as $company)
                         <option value="{{ $company }}">{{ $company }}</option>
                     @endforeach
                 </select>
-            </div>
-            <div>
-                <label class="block mb-2 text-sm font-medium">Branch Location</label>
-                <select id="branchFilter" class="w-full border p-[0.58rem] rounded">
+                
+                <select id="branchFilter" class="w-full sm:w-auto border border-gray-300 rounded-lg px-6 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <option value="">All Branches</option>
                     @foreach ($branches->whereNotNull() as $branch)
                         <option value="{{ $branch }}">{{ $branch }}</option>
                     @endforeach
                 </select>
-            </div>
-            <div>
-                <label class="block mb-2 text-sm font-medium">Department</label>
-                <select id="departmentFilter" class="w-full border p-[0.58rem] rounded">
+                
+                <select id="departmentFilter" class="w-full sm:w-auto border border-gray-300 rounded-lg px-6 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <option value="">All Departments</option>
                     @foreach ($departments->whereNotNull() as $department)
                         <option value="{{ $department }}">{{ $department }}</option>
                     @endforeach
                 </select>
+
+                <button id="resetFilters" class="w-full sm:w-auto bg-gray-200 hover:bg-gray-300 text-gray-800 px-4 py-2 rounded-lg flex items-center justify-center gap-2" title="Reset Filters">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-reload"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M19.933 13.041a8 8 0 1 1 -9.925 -8.788c3.899 -1.002 7.935 1.007 9.425 4.747" /><path d="M20 4v5h-5" /></svg>
+                    <span class="sm:hidden">Reset Filters</span>
+                </button>
             </div>
         </div>
-    </div>
 
-    <!-- User Table -->
-    <div class="mt-6 bg-white shadow-md rounded-lg p-4 md:p-6 overflow-x-auto">
-        <table class="w-full min-w-[1200px]">
-            <thead>
-                <tr>
-                    <th class="table-head">Full Name</th>
-                    <th class="table-head">Email</th>
-                    <th class="table-head">Phone Number</th>
-                    <th class="table-head">Company</th>
-                    <th class="table-head">Branch Location</th>
-                    <th class="table-head">Department</th>
-                    <th class="table-head">Position</th>
-                    <th class="table-head">Access Level</th>
-                    <th class="table-head">Actions</th>
-                </tr>
-            </thead>
-            <tbody id="users-table-body">
-                @foreach ($users as $user)
-                    <tr data-user-id="{{ $user->user_id }}">
-                        <td class="table-data">{{ $user->full_name }}</td>
-                        <td class="table-data">{{ $user->user_email }}</td>
-                        <td class="table-data">{{ $user->phone_number }}</td>
-                        <td class="table-data">{{ $user->company }}</td>
-                        <td class="table-data">{{ $user->branch_location }}</td>
-                        <td class="table-data">{{ $user->user_dept }}</td>
-                        <td class="table-data">{{ $user->user_position }}</td>
-                        <td class="table-data text-center">
-                          {{ $user->access_level == 1 ? 'Creator' : ($user->access_level == 2 ? 'Client' : 'Basic User') }}
-                        </td>
-                        <td class="table-data text-center">
-                            <div class="flex gap-3 items-center">
-                                <button 
-                                    @if ($user->drive_folder_link)
-                                        onclick="window.open('{{ $user->drive_folder_link }}', '_blank')"
+        <div class="overflow-x-auto">
+            <div class="min-w-full inline-block align-middle">
+                <table class="min-w-full divide-y divide-gray-200" id="users-table">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Full Name</th>
+                            <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+                            <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Phone Number</th>
+                            <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Company</th>
+                            <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Branch Location</th>
+                            <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Department</th>
+                            <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Position</th>
+                            <th class="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Access Level</th>
+                            <th class="px-4 sm:px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="users-table-body" class="divide-y divide-gray-200">
+                        @forelse ($users as $user)
+                            <tr class="align-middle hover:bg-gray-50" data-user-id="{{ $user->user_id }}">
+                                <td class="px-4 sm:px-6 py-4 text-sm text-gray-700">{{ $user->full_name }}</td>
+                                <td class="px-4 sm:px-6 py-4 text-sm text-gray-700">{{ $user->user_email }}</td>
+                                <td class="px-4 sm:px-6 py-4 text-sm text-gray-700">{{ $user->phone_number }}</td>
+                                <td class="px-4 sm:px-6 py-4 text-sm text-gray-700">{{ $user->company }}</td>
+                                <td class="px-4 sm:px-6 py-4 text-sm text-gray-700">{{ $user->branch_location }}</td>
+                                <td class="px-4 sm:px-6 py-4 text-sm text-gray-700">{{ $user->user_dept }}</td>
+                                <td class="px-4 sm:px-6 py-4 text-sm text-gray-700">{{ $user->user_position }}</td>
+                                <td class="px-4 sm:px-6 py-4 text-sm text-gray-700">
+                                    @if($user->access_level == 1)
+                                        <span class="px-2 py-1 inline-flex text-xs sm:text-sm font-semibold rounded-full bg-red-200 text-red-800">Creator</span>
+                                    @elseif($user->access_level == 2)
+                                        <span class="px-2 py-1 inline-flex text-xs sm:text-sm font-semibold rounded-full bg-blue-200 text-blue-800">Client</span>
                                     @else
-                                        onclick="Swal.fire({icon: 'warning', title: 'No Drive Folder', text: 'No drive folder found for this user.', confirmButtonColor: '#4285F4'})"
+                                        <span class="px-2 py-1 inline-flex text-xs sm:text-sm font-semibold rounded-full bg-gray-200 text-gray-800">Basic User</span>
                                     @endif
-                                    class="block w-[40px] text-left p-2 text-sm text-white bg-[#4285F4] rounded-[5px]" 
-                                    title="Open Google Drive Folder">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-folder"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2" /></svg>
-                                </button>
-                                                              
-                                <button onclick='openEditModal(@json($user))' class="block w-[40px] text-left p-2 text-sm text-white bg-[#1f5496] rounded-[5px]" title="Edit User">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-edit"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" /><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" /><path d="M16 5l3 3" /></svg>
-                                </button>
-                                
-                                <button onclick="deleteUser('{{ $user->user_id }}')" class="block w-[40px] text-left p-2 text-white text-sm bg-red-700 rounded-[5px]" title="Delete User">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-trash"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
+                                </td>
+                                <td class="px-4 sm:px-6 py-4 text-sm text-center">
+                                    <div class="flex justify-center items-center space-x-2">
+                                        <button 
+                                            @if ($user->drive_folder_link)
+                                                onclick="window.open('{{ $user->drive_folder_link }}', '_blank')"
+                                            @else
+                                                onclick="Swal.fire({icon: 'warning', title: 'No Drive Folder', text: 'No drive folder found for this user.', confirmButtonColor: '#4285F4'})"
+                                            @endif
+                                            class="text-blue-500 hover:text-blue-700" 
+                                            title="Open Google Drive Folder">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M5 4h4l3 3h7a2 2 0 0 1 2 2v8a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-11a2 2 0 0 1 2 -2" /></svg>
+                                        </button>
+                                                                            
+                                        <button onclick='openEditModal(@json($user))' class="text-blue-500 hover:text-blue-700" title="Edit User">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M7 7h-1a2 2 0 0 0 -2 2v9a2 2 0 0 0 2 2h9a2 2 0 0 0 2 -2v-1" /><path d="M20.385 6.585a2.1 2.1 0 0 0 -2.97 -2.97l-8.415 8.385v3h3l8.385 -8.415z" /><path d="M16 5l3 3" /></svg>
+                                        </button>
+                                        
+                                        <button onclick="deleteUser('{{ $user->user_id }}')" class="text-red-500 hover:text-red-700" title="Delete User">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0" /><path d="M10 11l0 6" /><path d="M14 11l0 6" /><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12" /><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3" /></svg>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="9" class="px-4 sm:px-6 py-4 text-center text-gray-500">No users found.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </main>
 
 @include('admin.users._edit-modal')
 @include('admin.users._add-modal')
+@endsection
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -208,8 +218,34 @@
 
     // --- Modal Controls ---
     function openAddUserModal() {
-        document.getElementById('addUserForm').reset();
-        document.getElementById('addUserModal').classList.remove('hidden');
+        const addUserForm = document.getElementById('addUserForm');
+        if (addUserForm) {
+            addUserForm.reset();
+        }
+        
+        // Reset country search fields for add modal, check if elements exist first
+        const addCountrySearch = document.getElementById('addCountrySearch');
+        if (addCountrySearch) {
+            addCountrySearch.value = '';
+        }
+        
+        const addCountry = document.getElementById('addCountry');
+        if (addCountry) {
+            addCountry.value = '';
+        }
+        
+        const addCountryCode = document.getElementById('addCountryCode');
+        if (addCountryCode) {
+            addCountryCode.value = '';
+        }
+        
+        const addUserModal = document.getElementById('addUserModal');
+        if (addUserModal) {
+            addUserModal.classList.remove('hidden');
+        } else {
+            console.error('Add User Modal not found. Make sure _add-modal.blade.php is included and has id="addUserModal".');
+            showToast('Error: Could not open modal.', 'error');
+        }
     }
     function closeAddUserModal() {
         document.getElementById('addUserModal').classList.add('hidden');
@@ -261,7 +297,7 @@
         } catch (error) {
             let errorMsg = error.message || 'An error occurred.';
             if (error.errors) {
-                errorMsg = Object.values(error.errors)[0][0];
+                errorMsg = Object.values(error.errors).map(err => err[0]).join('<br>');
             }
             showToast(errorMsg, 'error');
         }
@@ -290,7 +326,7 @@
         } catch (error) {
             let errorMsg = error.message || 'An error occurred.';
             if (error.errors) {
-                errorMsg = Object.values(error.errors)[0][0];
+                errorMsg = Object.values(error.errors).map(err => err[0]).join('<br>');
             }
             showToast(errorMsg, 'error');
         }
@@ -319,6 +355,7 @@
 
                     showToast(result.message, 'success');
                     document.querySelector(`tr[data-user-id="${userId}"]`).remove();
+                    filterUsers(); // Re-run filter to check for empty table
                 } catch (error) {
                     showToast(error.message || 'Failed to delete user.', 'error');
                 }
@@ -328,13 +365,24 @@
     
     // --- Filtering Logic ---
     function filterUsers() {
-        const rows = document.querySelectorAll('#users-table-body tr');
+        const tableBody = document.getElementById('users-table-body');
+        if (!tableBody) return;
+        
+        const rows = tableBody.getElementsByTagName('tr');
         const nameFilter = document.getElementById('nameFilter').value.toLowerCase().trim();
         const companyFilter = document.getElementById('companyFilter').value;
         const branchFilter = document.getElementById('branchFilter').value;
         const departmentFilter = document.getElementById('departmentFilter').value;
+        let hasVisibleRows = false;
+        const colSpan = 9; // Number of columns in the table
         
-        rows.forEach(row => {
+        Array.from(rows).forEach(row => {
+            const noResultCell = row.querySelector('td[colspan]');
+            if (row.classList.contains('no-results-row') || (noResultCell && noResultCell.getAttribute('colspan') == colSpan)) {
+                row.style.display = 'none';
+                return;
+            }
+
             const fullName = row.cells[0].textContent.toLowerCase();
             const company = row.cells[3].textContent;
             const branch = row.cells[4].textContent;
@@ -345,8 +393,32 @@
             const branchMatch = branchFilter === '' || branch === branchFilter;
             const departmentMatch = departmentFilter === '' || department === departmentFilter;
             
-            row.style.display = (nameMatch && companyMatch && branchMatch && departmentMatch) ? '' : 'none';
+            const matches = nameMatch && companyMatch && branchMatch && departmentMatch;
+            row.style.display = matches ? '' : 'none';
+            if(matches) hasVisibleRows = true;
         });
+
+        // Show/hide "No results" message
+        let noResultsRow = tableBody.querySelector('.no-results-row');
+        if (!hasVisibleRows) {
+            if (!noResultsRow) {
+                noResultsRow = document.createElement('tr');
+                noResultsRow.className = 'no-results-row';
+                noResultsRow.innerHTML = `<td colspan="${colSpan}" class="px-6 py-4 text-center text-gray-500">No users found matching filters</td>`;
+                tableBody.appendChild(noResultsRow);
+            }
+            noResultsRow.style.display = '';
+        } else if (noResultsRow) {
+            noResultsRow.style.display = 'none';
+        }
+
+        // Handle original empty message
+        const originalEmptyRow = tableBody.querySelector('td[colspan]');
+        if (nameFilter === '' && companyFilter === '' && branchFilter === '' && departmentFilter === '' && !hasVisibleRows && originalEmptyRow) {
+            if (!originalEmptyRow.parentElement.classList.contains('no-results-row')) {
+                originalEmptyRow.parentElement.style.display = ''; // Show original "No users"
+            }
+        }
     }
 
     document.getElementById('nameFilter').addEventListener('input', filterUsers);
@@ -368,5 +440,8 @@
         setupCountrySearch('addCountrySearch', 'addCountry', 'addCountryCode', 'addCountryDropdown');
         setupCountrySearch('editCountrySearch', 'editCountry', 'editCountryCode', 'editCountryDropdown');
     })();
+    
+    // Initial filter run in case table is empty to begin with
+    filterUsers();
 </script>
 @endpush
