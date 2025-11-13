@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // admin access level middleware
         $middleware->alias([
             'admin.access' => \App\Http\Middleware\CheckAdminAccessLevel::class,
+            'client.access' => \App\Http\Middleware\CheckClientAccessLevel::class,
         ]);
 
     })

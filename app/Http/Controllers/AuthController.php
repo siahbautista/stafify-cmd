@@ -86,7 +86,7 @@ class AuthController extends Controller
                 break;
             case 2:
             case 3:
-                $redirectUrl = '/dashboard';
+                $redirectUrl = '/client/dashboard';
                 break;
             case 0:
                 $redirectUrl = '/pending';

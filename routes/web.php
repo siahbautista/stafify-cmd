@@ -24,6 +24,10 @@ use App\Http\Controllers\TalentToolkitController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\UserController;
 
+// UMS Client Controllers
+use App\Http\Controllers\Client\DashboardController as ClientDashboardController;
+use App\Http\Controllers\Client\CompanyController; // <-- ADDED THIS
+
 // Shared Controllers
 use App\Http\Controllers\ProfileController;
 
@@ -45,19 +49,14 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 // ========================================================
 Route::middleware(['auth', 'admin.access'])->prefix('admin')->name('admin.')->group(function () {
     
-    // Admin Dashboard
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
-    
-    // Admin Profile (uses shared controller)
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
 
-    // Admin User Management
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
     Route::post('/users', [UserController::class, 'store'])->name('users.store');
     Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
     
-    // Admin Pending Users
     Route::get('/pending-users', [UserController::class, 'pending'])->name('users.pending');
     Route::post('/users/{user}/approve', [UserController::class, 'approve'])->name('users.approve');
     Route::post('/users/{user}/reject', [UserController::class, 'reject'])->name('users.reject');
@@ -65,14 +64,48 @@ Route::middleware(['auth', 'admin.access'])->prefix('admin')->name('admin.')->gr
 });
 
 // ========================================================
+// UMS Client Routes (Access Level 2)
+// ========================================================
+Route::middleware(['auth', 'client.access'])->prefix('client')->name('client.')->group(function () {
+    
+    Route::get('/dashboard', [ClientDashboardController::class, 'index'])->name('dashboard');
+    
+    // This re-uses the global profile controller, but gives it a unique route name
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
+
+    // --- ADDED THIS NEW GROUP FOR COMPANY & BRANCHES ---
+    Route::prefix('company')->name('company.')->group(function() {
+        // Company Profile
+        Route::get('/profile', [CompanyController::class, 'showProfile'])->name('profile');
+        Route::post('/profile', [CompanyController::class, 'createOrUpdateProfile'])->name('store');
+        
+        // Company Logo
+        Route::post('/logo-update', [CompanyController::class, 'updateLogo'])->name('logo.update');
+        Route::post('/logo-delete', [CompanyController::class, 'deleteLogo'])->name('logo.delete');
+        
+        // Company Settings
+        Route::post('/settings-update', [CompanyController::class, 'updateSettings'])->name('settings.update');
+
+        // Branch Management
+        Route::get('/branches', [CompanyController::class, 'showBranches'])->name('branches');
+        Route::post('/branches', [CompanyController::class, 'storeBranch'])->name('branch.store');
+        Route::put('/branches/{branchId}', [CompanyController::class, 'updateBranch'])->name('branch.update');
+        Route::delete('/branches/{branchId}', [CompanyController::class, 'destroyBranch'])->name('branch.destroy');
+    });
+});
+
+
+// ========================================================
 // Authenticated Routes (All Levels)
 // ========================================================
 Route::middleware('auth')->group(function () {
     
-    // --- HRIS Dashboard ---
+    // --- HRIS Dashboard (For level 3+ or all auth users) ---
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     
     // --- Shared Profile Routes ---
+    // Note: The '/profile' route is defined here to be accessible by all roles
+    // The specific admin/client prefix routes point to the same controller but use different names
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
     Route::post('/profile/details', [ProfileController::class, 'updateDetails'])->name('profile.updateDetails');
     Route::post('/profile/picture', [ProfileController::class, 'updatePicture'])->name('profile.updatePicture');
@@ -128,7 +161,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/api/workforce-records/fringe-benefits', [WorkforceRecordsController::class, 'getFringeBenefits'])->name('api.workforce-records.fringe-benefits');
     Route::post('/api/workforce-records/fringe-benefits', [WorkforceRecordsController::class, 'updateFringeBenefits'])->name('api.workforce-records.update-fringe-benefits');
     Route::get('/api/workforce-records/deminimis-benefits', [WorkforceRecordsController::class, 'getDeMinimisBenefits'])->name('api.workforce-records.deminimis-benefits');
-    Route::post('/api/workforce-records/deminimis-benefits', [WorkforceRecordsController::class, 'updateDeMinimisBenefits'])->name('api.workform-records.update-deminimis-benefits');
+    Route::post('/api/workforce-records/deminimis-benefits', [WorkforceRecordsController::class, 'updateDeMinimisBenefits'])->name('api.workforce-records.update-deminimis-benefits');
     Route::get('/api/workforce-records/get-evaluation', [WorkforceRecordsController::class, 'getEvaluation'])->name('api.workforce-records.get-evaluation');
     Route::post('/api/workforce-records/save-evaluation', [WorkforceRecordsController::class, 'saveEvaluation'])->name('api.workforce-records.save-evaluation');
     Route::post('/api/workforce-records/update-evaluation', [WorkforceRecordsController::class, 'updateEvaluation'])->name('api.workforce-records.update-evaluation');

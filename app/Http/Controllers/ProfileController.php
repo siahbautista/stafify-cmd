@@ -13,12 +13,24 @@ use Illuminate\Validation\Rules\Password;
 class ProfileController extends Controller
 {
     /**
-     * Display the user's profile page.
+     * Display the user's profile page based on their access level.
      */
     public function show()
     {
         $user = Auth::user();
-        return view('profile', compact('user'));
+
+        // Check access level and return the correct view
+        switch ($user->access_level) {
+            case 1:
+                // Admin (Level 1)
+                return view('admin.profile', compact('user'));
+            case 2:
+                // Client (Level 2)
+                return view('client.profile', compact('user'));
+            default:
+                // Basic User (Level 3) and any other
+                return view('profile', compact('user'));
+        }
     }
 
     /**
@@ -71,7 +83,6 @@ class ProfileController extends Controller
         $user->save();
 
         // --- Dynamic Company Table Update Logic ---
-        // This replicates the logic from your old update-profile.php
         $companyName = $user->company;
         if ($companyName) {
             $companyUsersTable = strtolower(str_replace(' ', '_', $companyName)) . "_users";
@@ -85,8 +96,6 @@ class ProfileController extends Controller
                 ];
 
                 if ($passwordUpdated) {
-                    // Note: Your old code saved the hashed password.
-                    // This assumes the company table also expects the same hashed password.
                     $companyData['user_password'] = $user->user_password;
                 }
 
@@ -96,7 +105,7 @@ class ProfileController extends Controller
                         ->update($companyData);
                 } catch (\Exception $e) {
                     // Log the error, but don't fail the whole request
-                    // \Log::error('Failed to update company user table: ' . $e->getMessage());
+                    logger()->error('Failed to update company user table: ' . $e->getMessage());
                 }
             }
         }
@@ -118,7 +127,6 @@ class ProfileController extends Controller
         $old_image_path = $user->profile_picture;
 
         // Store the new file in `storage/app/public/uploads`
-        // The path stored will be 'uploads/filename.jpg'
         $path = $request->file('profile_picture')->store('uploads', 'public');
 
         // Update the user's profile
@@ -132,7 +140,7 @@ class ProfileController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'image' => Storage::url($path) // Get the public URL, e.g., /storage/uploads/filename.jpg
+            'image' => Storage::url($path) // Get the public URL
         ]);
     }
 

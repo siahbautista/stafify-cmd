@@ -68,6 +68,28 @@ class GoogleDriveService
             'sendNotificationEmail' => true // Notifies the user
         ]);
 
+        // 4. Share with the static admin email from .env
+        $adminEmail = env('GOOGLE_DRIVE_ADMIN_EMAIL');
+
+        if ($adminEmail) {
+            try {
+                $adminPermission = new Google_Service_Drive_Permission([
+                    'type' => 'user',
+                    'role' => 'writer', // You can change this to 'reader' if you only want viewing access
+                    'emailAddress' => $adminEmail
+                ]);
+
+                $this->driveService->permissions->create($newFolderId, $adminPermission, [
+                    'sendNotificationEmail' => false // Set to true if you want the admin to be notified
+                ]);
+            } catch (Exception $e) {
+                // If this fails, just log it but don't stop the process.
+                // The user approval was still a success.
+                logger()->error("Failed to share folder {$newFolderId} with admin {$adminEmail}: " . $e->getMessage());
+            }
+        }
+        
+
         return [
             'folderId' => $newFolderId,
             'folderLink' => $folderLink

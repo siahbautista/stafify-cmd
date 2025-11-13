@@ -3,7 +3,8 @@
     // ... (User variable setup as in HRIS header.blade.php)
 @endphp
 
-<div class="flex justify-between items-center gap-10 header mb-6">
+<div class="flex justify-between items-center gap-10 header mb-0">
+
     <div class="flex flex-col gap-5 greetings">
         <h1 class="page-title font-bold text-2xl text-gray-800">@yield('title', 'Dashboard')</h1>
     </div>

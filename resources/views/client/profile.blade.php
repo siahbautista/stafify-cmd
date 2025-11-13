@@ -1,13 +1,9 @@
-@extends('layouts.app')
+@extends('layouts.client-app')
 
 @section('title', 'User Profile')
 
 @section('content')
-<main class="flex flex-col flex-1 gap-10 min-h-screen p-8 !overflow-y-auto">
-    <div class="page-heading">
-        {{-- This heading is now in the layout header --}}
-    </div>
-    
+<main>
     <div class="flex gap-5 max-[768px]:flex-col">
         <!-- Profile Picture Upload Section -->
         <div>

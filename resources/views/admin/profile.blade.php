@@ -1,10 +1,12 @@
-@extends('layouts.app')
+@extends('layouts.admin-app')
 
 @section('title', 'User Profile')
 
 @section('content')
-<main class="flex flex-col flex-1 gap-10 min-h-screen p-8 !overflow-y-auto">
-    <div class="page-heading">
+<main>
+
+    <div class="page-heading" style="
+    margin-bottom: 0px;">
         {{-- This heading is now in the layout header --}}
     </div>
     

@@ -3,7 +3,12 @@
 @section('title', $selectedCompany ? 'Company: ' . e($selectedCompany) : 'Creator Dashboard')
 
 @section('content')
-<main class="flex-1 min-h-screen p-8 !overflow-y-auto">
+<main class="flex-1 min-h-screen p-8 !overflow-y-auto" style="
+    padding-top: 0px;
+    padding-bottom: 0px;
+    padding-right: 0px;
+    padding-left: 0px;
+">
     {{-- 
       Note: The main sidebar toggle button is now in layouts/admin/mobile_menu.blade.php
       The page heading is now in layouts/admin/header.blade.php
