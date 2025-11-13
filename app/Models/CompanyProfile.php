@@ -10,13 +10,7 @@ class CompanyProfile extends Model
     use HasFactory;
 
     protected $table = 'company_profiles';
-
-    /**
-     * Use 'id' as the primary key if 'company_id' is not the PK.
-     * Your branches.php file seems to use both 'company_id' and 'id'.
-     * If your primary key is 'company_id', change 'id' to 'company_id' below.
-     */
-    protected $primaryKey = 'company_id'; // or 'company_id'
+    protected $primaryKey = 'company_id';
 
     protected $fillable = [
         'company_name',
@@ -38,8 +32,7 @@ class CompanyProfile extends Model
      */
     public function branches()
     {
-        // Change 'company_id' if your foreign key is different
-        return $this->hasMany(CompanyBranch::class, 'company_id', $this->primaryKey);
+        return $this->hasMany(CompanyBranch::class, 'company_id', 'company_id');
     }
 
     /**
@@ -47,8 +40,25 @@ class CompanyProfile extends Model
      */
     public function headquartersBranch()
     {
-        // Change 'company_id' if your foreign key is different
-        return $this->hasOne(CompanyBranch::class, 'company_id', $this->primaryKey)
+        return $this->hasOne(CompanyBranch::class, 'company_id', 'company_id')
                     ->where('is_headquarters', 1);
+    }
+
+    /**
+     * --- NEW RELATIONSHIP ---
+     * Get all departments for this company.
+     */
+    public function departments()
+    {
+        return $this->hasMany(CompanyDepartment::class, 'company_id', 'company_id');
+    }
+
+    /**
+     * --- NEW RELATIONSHIP ---
+     * Get all positions for this company.
+     */
+    public function positions()
+    {
+        return $this->hasMany(CompanyPosition::class, 'company_id', 'company_id');
     }
 }

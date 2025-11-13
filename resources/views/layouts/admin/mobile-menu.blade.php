@@ -21,7 +21,9 @@
                     </svg>
                 Profile Settings
             </a>
-            <a href="{{ route('logout') }}" class="!flex gap-2 items-center" onclick="event.preventDefault(); document.getElementById('logout-form-mobile').submit();">
+            
+            {{-- UPDATED: The onclick handler now points to 'logout-form-top-bar' --}}
+            <a href="{{ route('logout') }}" class="!flex gap-2 items-center" onclick="event.preventDefault(); document.getElementById('logout-form-top-bar').submit();">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler icons-tabler-outline icon-tabler-logout">
                     </svg>
                 Logout
@@ -30,6 +32,6 @@
     </div>
 </div>
 
-<form id="logout-form-mobile" action="{{ route('logout') }}" method="POST" style="display: none;">
+<form id="logout-form-top-bar" action="{{ route('logout') }}" method="POST" style="display: none;">
     @csrf
 </form>

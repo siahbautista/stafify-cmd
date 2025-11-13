@@ -26,7 +26,8 @@ use App\Http\Controllers\Admin\UserController;
 
 // UMS Client Controllers
 use App\Http\Controllers\Client\DashboardController as ClientDashboardController;
-use App\Http\Controllers\Client\CompanyController; // <-- ADDED THIS
+use App\Http\Controllers\Client\CompanyController;
+use App\Http\Controllers\Client\UserController as ClientUserController; // <-- ADD THIS
 
 // Shared Controllers
 use App\Http\Controllers\ProfileController;
@@ -73,7 +74,7 @@ Route::middleware(['auth', 'client.access'])->prefix('client')->name('client.')-
     // This re-uses the global profile controller, but gives it a unique route name
     Route::get('/profile', [ProfileController::class, 'show'])->name('profile');
 
-    // --- ADDED THIS NEW GROUP FOR COMPANY & BRANCHES ---
+    // --- Company & Branches ---
     Route::prefix('company')->name('company.')->group(function() {
         // Company Profile
         Route::get('/profile', [CompanyController::class, 'showProfile'])->name('profile');
@@ -91,6 +92,20 @@ Route::middleware(['auth', 'client.access'])->prefix('client')->name('client.')-
         Route::post('/branches', [CompanyController::class, 'storeBranch'])->name('branch.store');
         Route::put('/branches/{branchId}', [CompanyController::class, 'updateBranch'])->name('branch.update');
         Route::delete('/branches/{branchId}', [CompanyController::class, 'destroyBranch'])->name('branch.destroy');
+    });
+
+    // --- User Management (Manage Employees) ---
+    Route::prefix('users')->name('users.')->group(function () {
+        Route::get('/', [ClientUserController::class, 'index'])->name('index');
+        Route::post('/', [ClientUserController::class, 'store'])->name('store');
+        Route::put('/{user}', [ClientUserController::class, 'update'])->name('update');
+        Route::delete('/{user}', [ClientUserController::class, 'destroy'])->name('destroy');
+        Route::post('/{user}/promote', [ClientUserController::class, 'promote'])->name('promote');
+        Route::post('/{user}/demote', [ClientUserController::class, 'demote'])->name('demote');
+
+        // Routes for adding departments/positions from the user modal
+        Route::post('/store-department', [ClientUserController::class, 'storeDepartment'])->name('storeDepartment');
+        Route::post('/store-position', [ClientUserController::class, 'storePosition'])->name('storePosition');
     });
 });
 
@@ -159,7 +174,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/api/workforce-records/user-settings', [WorkforceRecordsController::class, 'updateUserSettings'])->name('api.workforce-records.update-user-settings');
     Route::get('/api/workforce-records/user-files', [WorkforceRecordsController::class, 'getUserFiles'])->name('api.workforce-records.user-files');
     Route::get('/api/workforce-records/fringe-benefits', [WorkforceRecordsController::class, 'getFringeBenefits'])->name('api.workforce-records.fringe-benefits');
-    Route::post('/api/workforce-records/fringe-benefits', [WorkforceRecordsController::class, 'updateFringeBenefits'])->name('api.workforce-records.update-fringe-benefits');
+    Route::post('/api/workforce-records/fringe-benefits', [WorkforceRecordsController::class, 'updateFringeBenefits'])->name('api.workF-records.update-fringe-benefits');
     Route::get('/api/workforce-records/deminimis-benefits', [WorkforceRecordsController::class, 'getDeMinimisBenefits'])->name('api.workforce-records.deminimis-benefits');
     Route::post('/api/workforce-records/deminimis-benefits', [WorkforceRecordsController::class, 'updateDeMinimisBenefits'])->name('api.workforce-records.update-deminimis-benefits');
     Route::get('/api/workforce-records/get-evaluation', [WorkforceRecordsController::class, 'getEvaluation'])->name('api.workforce-records.get-evaluation');

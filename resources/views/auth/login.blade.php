@@ -10,13 +10,13 @@
     <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <title>Stafify HRIS - Login</title>
+    <title>Stafify UMS - Login</title>
 </head>
 <body class="bg-mesh-gradient">
     <!-- Loading Screen -->
     <div class="loading-screen" id="loadingScreen">
         <div class="loader"></div>
-        <p class="loading-text neural-grotesk">Loading Stafify CRM - Login...</p>
+        <p class="loading-text neural-grotesk">Loading Stafify UMS - Login...</p>
     </div>
 
     <main class="flex overflow-hidden items-center justify-center" id="mainContent" style="display: none;">
@@ -25,7 +25,7 @@
                 <div class="flex flex-col gap-30">
                     <div class="flex flex-col items-center gap-[10px] logo-wrapper">
                         <img src="{{ asset('assets/images/Stafify-Logo.png') }}" alt="Stafify Logo" class="w-[205px]" onclick="window.location.href='/';" style="cursor: pointer;">
-                        <p class="text-zinc-200 mt-2 text-center">Human Resources Information System</p>
+                        <p class="text-zinc-200 mt-2 text-center">User Management System</p>
                     </div>
                     <div class="flex flex-col gap-[40px] bg-white !p-[40px] rounded-[20px]">
                         <div class="flex flex-col gap-3">

@@ -58,8 +58,17 @@
                     </a>
                 </li>
 
+                {{-- ***** NEW LINK ADDED HERE ***** --}}
                 <li class="sidebarMenuItem">
-                    <button onclick="toggleSidebarDropdown('desktop')" class="nav-link w-full flex justify-between items-center">
+                    <a href="{{ route('client.users.index') }}" class="nav-link {{ request()->routeIs('client.users.index') ? 'active' : '' }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-users"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 7m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" /><path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /><path d="M21 21v-2a4 4 0 0 0 -3 -3.85" /></svg>
+                        <span class="menu-text">Users</span>
+                    </a>
+                </li>
+                {{-- ***** END OF NEW LINK ***** --}}
+
+                <li class="sidebarMenuItem">
+                    <button onclick="toggleSidebarDropdown('desktop')" class="nav-link w-full flex justify-between items-center {{ request()->routeIs('client.company.*') ? 'active' : '' }}">
                         <span class="flex items-center gap-3"> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-building"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 21l18 0" /><path d="M9 8l1 0" /><path d="M9 12l1 0" /><path d="M9 16l1 0" /><path d="M14 8l1 0" /><path d="M14 12l1 0" /><path d="M14 16l1 0" /><path d="M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16" /></svg>
                             <span class="menu-text">Company</span>
                         </span>
@@ -111,6 +120,7 @@
     </div>
 </div>
 
+{{-- This form is for the desktop sidebar link --}}
 <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
     @csrf
 </form>
@@ -166,8 +176,17 @@
                     </a>
                 </li>
 
+                {{-- ***** NEW LINK ADDED HERE ***** --}}
                 <li class="sidebarMenuItem">
-                    <button onclick="toggleSidebarDropdown('mobile')" class="nav-link w-full flex justify-between items-center">
+                    <a href="{{ route('client.users.index') }}" class="nav-link {{ request()->routeIs('client.users.index') ? 'active' : '' }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-users"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M9 7m-4 0a4 4 0 1 0 8 0a4 4 0 1 0 -8 0" /><path d="M3 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /><path d="M21 21v-2a4 4 0 0 0 -3 -3.85" /></svg>
+                        <span class="menu-text">Manage Employees</span>
+                    </a>
+                </li>
+                {{-- ***** END OF NEW LINK ***** --}}
+
+                <li class="sidebarMenuItem">
+                    <button onclick="toggleSidebarDropdown('mobile')" class="nav-link w-full flex justify-between items-center {{ request()->routeIs('client.company.*') ? 'active' : '' }}">
                         <span class="flex items-center gap-3"> <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-building"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M3 21l18 0" /><path d="M9 8l1 0" /><path d="M9 12l1 0" /><path d="M9 16l1 0" /><path d="M14 8l1 0" /><path d="M14 12l1 0" /><path d="M14 16l1 0" /><path d="M5 21v-16a2 2 0 0 1 2 -2h10a2 2 0 0 1 2 2v16" /></svg>
                             <span class="menu-text">Company</span>
                         </span>
@@ -193,7 +212,8 @@
                     </div>
                 </li>
                 <li class="sidebarMenuItem">
-                     <a href="{{ route('logout') }}" class="nav-link" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                     {{-- UPDATED: Points to the mobile-specific form ID --}}
+                     <a href="{{ route('logout') }}" class="nav-link" onclick="event.preventDefault(); document.getElementById('logout-form-mobile').submit();">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="icon icon-tabler icons-tabler-outline icon-tabler-logout-2"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 8v-2a2 2 0 0 1 2 -2h7a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-7a2 2 0 0 1 -2 -2v-2" /><path d="M15 12h-12l3 -3" /><path d="M6 15l-3 -3" /></svg>
                         <span class="menu-text">Sign Out</span>
                     </a>
@@ -208,18 +228,30 @@
     </div>
 </div>
 
-<script src="https://cdn.tailwindcss.com"></script>
+{{-- UPDATED: This form is for the mobile sidebar link --}}
+<form id="logout-form-mobile" action="{{ route('logout') }}" method="POST" style="display: none;">
+    @csrf
+</form>
+
+{{-- This script is now wrapped in @push('scripts') and the duplicate Tailwind script is removed --}}
+@push('scripts')
 <script>
-    // Sidebar Collapse
+ // Sidebar Collapse
     function toggleSidebar() {
         const sidebar = document.querySelector('.sidebar');
+        // UPDATED: Check if mainContent exists before trying to use it
         const mainContent = document.querySelector('.main-content');
-        sidebar.classList.toggle('collapsed');
+        
+        if (sidebar) {
+            sidebar.classList.toggle('collapsed');
+        }
 
-        if (sidebar.classList.contains('collapsed')) {
-            mainContent.style.marginLeft = "70px";
-        } else {
-            mainContent.style.marginLeft = "250px";
+        if (mainContent) { // Only change style if the element exists
+            if (sidebar && sidebar.classList.contains('collapsed')) {
+                mainContent.style.marginLeft = "70px";
+            } else {
+                mainContent.style.marginLeft = "250px";
+            }
         }
     }
 
@@ -242,12 +274,12 @@
         const overlay = document.querySelector(".sidebar-overlay-mobile");
 
         function openSidebar() {
-            sidebar.classList.add("active");
-            overlay.classList.add("active");
+            if (sidebar) sidebar.classList.add("active");
+            if (overlay) overlay.classList.add("active");
         }
         function closeSidebar() {
-            sidebar.classList.remove("active");
-            overlay.classList.remove("active");
+            if (sidebar) sidebar.classList.remove("active");
+            if (overlay) overlay.classList.remove("active");
         }
 
         if (menuButton) menuButton.addEventListener("click", openSidebar);
@@ -255,20 +287,23 @@
         if (overlay) overlay.addEventListener("click", closeSidebar);
     });
 
-    // --- NEW DROPDOWN SCRIPT ---
+    // --- COMPANY DROPDOWN SCRIPT (Renamed to avoid conflicts) ---
     function toggleSidebarDropdown(type) {
-        const menu = document.getElementById(`dropdownMenu${type === 'desktop' ? 'Desktop' : 'Mobile'}`);
-        const icon = document.getElementById(`dropdownIcon${type === 'desktop' ? 'Desktop' : 'Mobile'}`);
+        const menuId = `dropdownMenu${type === 'desktop' ? 'Desktop' : 'Mobile'}`;
+        const iconId = `dropdownIcon${type === 'desktop' ? 'Desktop' : 'Mobile'}`;
+        
+        const menu = document.getElementById(menuId);
+        const icon = document.getElementById(iconId);
 
         if (!menu || !icon) {
-            console.error('Dropdown elements not found for:', type);
+            console.error('Sidebar dropdown elements not found for:', type);
             return;
         }
     
         if (menu.classList.contains('max-h-0')) {
             // Open
             menu.classList.remove('max-h-0', 'opacity-0', 'scale-y-95');
-            menu.classList.add('max-h-[500px]', 'opacity-100', 'scale-y-100', 'mt-2'); // mt-2 for spacing
+            menu.classList.add('max-h-[500px]', 'opacity-100', 'scale-y-100', 'mt-2');
             icon.classList.add('rotate-180');
         } else {
             // Close
@@ -280,14 +315,49 @@
 
     // Auto-open dropdown if a child link is active
     function checkActiveDropdown(type) {
-        const menu = document.getElementById(`dropdownMenu${type === 'desktop' ? 'Desktop' : 'Mobile'}`);
-        const icon = document.getElementById(`dropdownIcon${type === 'desktop' ? 'Desktop' : 'Mobile'}`);
+        const menuId = `dropdownMenu${type === 'desktop' ? 'Desktop' : 'Mobile'}`;
+        const iconId = `dropdownIcon${type === 'desktop' ? 'Desktop' : 'Mobile'}`;
+        
+        const menu = document.getElementById(menuId);
+        const icon = document.getElementById(iconId);
 
         // Check if menu, icon, and an active child link exist
         if (menu && icon && menu.querySelector('.nav-link.active')) {
+            // Also set the parent button to active
+            const parentButton = menu.previousElementSibling;
+            if (parentButton && parentButton.classList.contains('nav-link')) {
+                parentButton.classList.add('active');
+            }
+            
             menu.classList.remove('max-h-0', 'opacity-0', 'scale-y-95');
             menu.classList.add('max-h-[500px]', 'opacity-100', 'scale-y-100', 'mt-2');
             icon.classList.add('rotate-180');
         }
     }
+
+    // Update active state for parent dropdown - Run after DOM is ready
+    document.addEventListener("DOMContentLoaded", function() {
+        // Check both desktop and mobile dropdowns
+        ['Desktop', 'Mobile'].forEach(function(type) {
+            const dropdown = document.getElementById(`dropdownMenu${type}`);
+            if (!dropdown) return;
+            
+            const companyLinks = dropdown.querySelectorAll('a.nav-link');
+            let companyLinkActive = false;
+            
+            companyLinks.forEach(function(link) {
+                if (link.classList.contains('active')) {
+                    companyLinkActive = true;
+                }
+            });
+
+            if (companyLinkActive) {
+                const parentButton = dropdown.previousElementSibling;
+                if (parentButton && parentButton.classList.contains('nav-link')) {
+                    parentButton.classList.add('active');
+                }
+            }
+        });
+    });
 </script>
+@endpush
